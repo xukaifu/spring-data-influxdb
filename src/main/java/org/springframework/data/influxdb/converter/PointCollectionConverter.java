@@ -20,7 +20,6 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
 
-public interface PointCollectionConverter<T> extends Converter<T, List<Point>>
-{
+public interface PointCollectionConverter<T> extends Converter<T, List<Point>> {
 
 }

@@ -18,15 +18,12 @@ package org.springframework.data.influxdb;
 import org.influxdb.dto.Point;
 import org.springframework.data.influxdb.converter.PointConverter;
 
-public class DefaultInfluxDBTemplate extends InfluxDBTemplate<Point>
-{
-  public DefaultInfluxDBTemplate()
-  {
+public class DefaultInfluxDBTemplate extends InfluxDBTemplate<Point> {
+    public DefaultInfluxDBTemplate() {
 
-  }
+    }
 
-  public DefaultInfluxDBTemplate(final InfluxDBConnectionFactory connectionFactory)
-  {
-    super(connectionFactory, new PointConverter());
-  }
+    public DefaultInfluxDBTemplate(final InfluxDBConnectionFactory connectionFactory) {
+        super(connectionFactory, new PointConverter());
+    }
 }

@@ -28,88 +28,90 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class InfluxDBTemplate<T> extends InfluxDBAccessor implements InfluxDBOperations<T>
-{
-  private PointCollectionConverter<T> converter;
+public class InfluxDBTemplate<T> extends InfluxDBAccessor implements InfluxDBOperations<T> {
+    private PointCollectionConverter<T> converter;
 
-  public InfluxDBTemplate()
-  {
+    public InfluxDBTemplate() {
 
-  }
+    }
 
-  public InfluxDBTemplate(final InfluxDBConnectionFactory connectionFactory, final PointCollectionConverter<T> converter)
-  {
-    setConnectionFactory(connectionFactory);
-    setConverter(converter);
-  }
+    public InfluxDBTemplate(final InfluxDBConnectionFactory connectionFactory, final PointCollectionConverter<T> converter) {
+        setConnectionFactory(connectionFactory);
+        setConverter(converter);
+    }
 
 
-  public void setConverter(final PointCollectionConverter<T> converter)
-  {
-    this.converter = converter;
-  }
+    public void setConverter(final PointCollectionConverter<T> converter) {
+        this.converter = converter;
+    }
 
-  @Override
-  public void afterPropertiesSet()
-  {
-    super.afterPropertiesSet();
-    Assert.notNull(converter, "PointCollectionConverter is required");
-  }
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+        Assert.notNull(converter, "PointCollectionConverter is required");
+    }
 
-  @Override
-  public void createDatabase()
-  {
-    final String database = getDatabase();
-    getConnection().createDatabase(database);
-  }
+    @Override
+    public void createDatabase() {
+        final String database = getDatabase();
+        getConnection().createDatabase(database);
+    }
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public void write(final T... payload)
-  {
-    write(Arrays.asList(payload));
-  }
+    @Override
+    public void writeLine(String payload) {
+        final String database = getDatabase();
+        final String retentionPolicy = getConnectionFactory().getProperties().getRetentionPolicy();
+        getConnection().write(database, retentionPolicy, InfluxDB.ConsistencyLevel.ONE, payload);
+    }
 
-  @Override
-  public void write(final List<T> payload)
-  {
-    final String database = getDatabase();
-    final String retentionPolicy = getConnectionFactory().getProperties().getRetentionPolicy();
-    final BatchPoints ops = BatchPoints.database(database)
-      .retentionPolicy(retentionPolicy)
-      .consistency(InfluxDB.ConsistencyLevel.ALL)
-      .build();
-    payload.forEach(t -> converter.convert(t).forEach(ops::point));
-    getConnection().write(ops);
-  }
+    @Override
+    public void writeLines(List<String> payload) {
+        final String database = getDatabase();
+        final String retentionPolicy = getConnectionFactory().getProperties().getRetentionPolicy();
+        getConnection().write(database, retentionPolicy, InfluxDB.ConsistencyLevel.ONE, payload);
+    }
 
-  @Override
-  public QueryResult query(final Query query)
-  {
-    return getConnection().query(query);
-  }
 
-  @Override
-  public QueryResult query(final Query query, final TimeUnit timeUnit)
-  {
-    return getConnection().query(query, timeUnit);
-  }
+    @Override
+    @SuppressWarnings("unchecked")
+    public void write(final T... payload) {
+        write(Arrays.asList(payload));
+    }
 
-  @Override
-  public void query(Query query, int chunkSize, Consumer<QueryResult> consumer)
-  {
-    getConnection().query(query, chunkSize, consumer);
-  }
+    @Override
+    public void write(final List<T> payload) {
+        final String database = getDatabase();
+        final String retentionPolicy = getConnectionFactory().getProperties().getRetentionPolicy();
+        final BatchPoints ops = BatchPoints.database(database)
+                .retentionPolicy(retentionPolicy)
+                .consistency(InfluxDB.ConsistencyLevel.ALL)
+                .build();
+        payload.forEach(t -> converter.convert(t).forEach(ops::point));
+        getConnection().write(ops);
+    }
 
-  @Override
-  public Pong ping()
-  {
-    return getConnection().ping();
-  }
+    @Override
+    public QueryResult query(final Query query) {
+        return getConnection().query(query);
+    }
 
-  @Override
-  public String version()
-  {
-    return getConnection().version();
-  }
+    @Override
+    public QueryResult query(final Query query, final TimeUnit timeUnit) {
+        return getConnection().query(query, timeUnit);
+    }
+
+    @Override
+    public void query(Query query, int chunkSize, Consumer<QueryResult> consumer) {
+        getConnection().query(query, chunkSize, consumer);
+    }
+
+    @Override
+    public Pong ping() {
+        return getConnection().ping();
+    }
+
+    @Override
+    public String version() {
+        return getConnection().version();
+    }
 }

@@ -28,42 +28,43 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner
-{
-  private static Logger logger = LoggerFactory.getLogger(Application.class);
+public class Application implements CommandLineRunner {
+    private static Logger logger = LoggerFactory.getLogger(Application.class);
 
-  @Autowired
-  private InfluxDBTemplate<Point> influxDBTemplate;
+    @Autowired
+    private InfluxDBTemplate<Point> influxDBTemplate;
 
-  @Override
-  public void run(final String... args) throws Exception
-  {
-    // Create database...
-    influxDBTemplate.createDatabase();
+    @Override
+    public void run(final String... args) throws Exception {
+        // Create database...
+        // influxDBTemplate.createDatabase();
 
-    // Create some data...
-    final Point p1 = Point.measurement("cpu")
-      .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-      .tag("tenant", "default")
-      .addField("idle", 90L)
-      .addField("user", 9L)
-      .addField("system", 1L)
-      .build();
-    final Point p2 = Point.measurement("disk")
-      .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-      .tag("tenant", "default")
-      .addField("used", 80L)
-      .addField("free", 1L)
-      .build();
-    influxDBTemplate.write(p1, p2);
+        // Create some data...
+        final Point p1 = Point.measurement("cpu")
+                .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                .tag("tenant", "default")
+                .addField("idle", 90L)
+                .addField("user", 9L)
+                .addField("system", 1L)
+                .build();
+        final Point p2 = Point.measurement("disk")
+                .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                .tag("tenant", "default")
+                .addField("used", 80L)
+                .addField("free", 1L)
+                .build();
+        influxDBTemplate.write(p1, p2);
 
-    // ... and query the latest data
-    final Query q = new Query("SELECT * FROM cpu GROUP BY tenant", influxDBTemplate.getDatabase());
-    influxDBTemplate.query(q, 10, queryResult -> logger.info(queryResult.toString()));
-  }
+        // ... and query the latest data
+        final Query q = new Query("SELECT * FROM cpu GROUP BY tenant", influxDBTemplate.getDatabase());
+        influxDBTemplate.query(q, 10, queryResult -> logger.info(queryResult.toString()));
 
-  public static void main(String[] args)
-  {
-    SpringApplication.run(Application.class, args);
-  }
+
+        influxDBTemplate.writeLine("weather,location=us-midwest,season=summer temperature=82,tc=25.1 1465839830100400200");
+
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 }

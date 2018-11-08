@@ -21,50 +21,43 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class InfluxDBAccessor implements InitializingBean
-{
-  protected final Logger logger = LoggerFactory.getLogger(getClass());
+public class InfluxDBAccessor implements InitializingBean {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private InfluxDBConnectionFactory connectionFactory;
+    private InfluxDBConnectionFactory connectionFactory;
 
-  /**
-   * Returns the connection factory.
-   *
-   * @return Returns the connection factory
-   */
-  public InfluxDBConnectionFactory getConnectionFactory()
-  {
-    return connectionFactory;
-  }
+    /**
+     * Returns the connection factory.
+     *
+     * @return Returns the connection factory
+     */
+    public InfluxDBConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
 
-  /**
-   * Sets the connection factory.
-   *
-   * @param connectionFactory The connection factory to set
-   */
-  public void setConnectionFactory(final InfluxDBConnectionFactory connectionFactory)
-  {
-    this.connectionFactory = connectionFactory;
-  }
+    /**
+     * Sets the connection factory.
+     *
+     * @param connectionFactory The connection factory to set
+     */
+    public void setConnectionFactory(final InfluxDBConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
-  public String getDatabase()
-  {
-    return getConnectionFactory().getProperties().getDatabase();
-  }
+    public String getDatabase() {
+        return getConnectionFactory().getProperties().getDatabase();
+    }
 
-  public String getRetentionPolicy()
-  {
-    return getConnectionFactory().getProperties().getRetentionPolicy();
-  }
+    public String getRetentionPolicy() {
+        return getConnectionFactory().getProperties().getRetentionPolicy();
+    }
 
-  public InfluxDB getConnection()
-  {
-    return getConnectionFactory().getConnection();
-  }
+    public InfluxDB getConnection() {
+        return getConnectionFactory().getConnection();
+    }
 
-  @Override
-  public void afterPropertiesSet()
-  {
-    Assert.notNull(getConnectionFactory(), "InfluxDBConnectionFactory is required");
-  }
+    @Override
+    public void afterPropertiesSet() {
+        Assert.notNull(getConnectionFactory(), "InfluxDBConnectionFactory is required");
+    }
 }
